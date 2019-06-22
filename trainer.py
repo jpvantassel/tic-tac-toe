@@ -7,11 +7,12 @@ from evalboard import evalboard, set_diffuse, nd3_to_tuple
 from transform import board_transform
 from inversetransform import board_itransform
 from updateboard import updateboard
+from updateutility import update_utility_winner, update_utility_loser, flip_player
 
 # Input
 p1 = 1
 p2 = 2
-number_simulation = 1000
+number_simulation = 10000
 file_name_p1 = "training_p1_"+str(number_simulation)
 file_name_p2 = "training_p2_"+str(number_simulation)
 reward_win = 1
@@ -80,15 +81,21 @@ for simulation in range(number_simulation):
 
     # Update utility
     if win:
-        for key, move in zip(current_game_boards[winning_player], current_game_move[winning_player]):
-            delta = np.zeros((3, 3))
-            delta[move[0]][move[1]] += reward_win
-            boards_played[winning_player][key] += delta
+        boards_played = update_utility_winner(boards_played,
+                                              current_game_boards,
+                                              current_game_move,
+                                              winning_player,
+                                              losing_player,
+                                              reward_win,
+                                              punish_loss)
 
-        for key, move in zip(current_game_boards[losing_player], current_game_move[losing_player]):
-            delta = np.zeros((3, 3))
-            delta[move[0]][move[1]] += punish_loss
-            boards_played[losing_player][key] += delta
+        boards_played = update_utility_loser(boards_played,
+                                              current_game_boards,
+                                              current_game_move,
+                                              winning_player,
+                                              losing_player,
+                                              reward_win,
+                                              punish_loss)
 
 # Save out training
 for player in (p1, p2):

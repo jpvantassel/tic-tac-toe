@@ -31,7 +31,7 @@ while ask_for_input:
 
 # Decide on difficulty
 if difficulty in ("E",):
-    number_simulation = 1000
+    number_simulation = 10000
 elif difficulty in ("M",):
     number_simulation = 1000000
 elif difficulty in ("H",):
