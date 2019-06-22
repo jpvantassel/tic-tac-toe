@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 import os
 from checkwin import checkwin
 from decideplay import decideplay
-from evalboard import evalboard, setdiffuse, nd3_to_tuple
+from evalboard import evalboard, set_diffuse, nd3_to_tuple
+from transform import board_transform
+from inversetransform import board_itransform
 from updateboard import updateboard
 from plotforhuman import determinecell, updateplot, plotstate, plotforhuman
 
@@ -16,7 +18,7 @@ while ask_for_input:
     if human_player in (1, 2):
         ask_for_input = False
     else:
-      print("Player {} not recognized, enter 1 or 2".format(human_player))
+        print("Player {} not recognized, enter 1 or 2".format(human_player))
 
 # Enter game difficulty
 ask_for_input = True
@@ -29,7 +31,7 @@ while ask_for_input:
 
 # Decide on difficulty
 if difficulty in ("E",):
-    number_simulation = 100000
+    number_simulation = 1000
 elif difficulty in ("M",):
     number_simulation = 1000000
 elif difficulty in ("H",):
@@ -83,11 +85,11 @@ while continue_playing:
             if current_player == human_player:
                 move = plotforhuman(state, current_player)
             else:
-                board_state = evalboard(state, 
+                board_state = evalboard(state,
                                         boards_played[current_player],
                                         p1=p1,
                                         p2=p2,
-                                       )
+                                        )
                 current_game_boards[current_player] += [board_state[1]]
 
                 # Add entry to the boards_played
@@ -95,11 +97,11 @@ while continue_playing:
                     boards_played[current_player].update(
                         {board_state[1]: board_state[0]})
                 # Decide the move
-                srow, scol, trow, tcol = decideplay(board_state[0], 
-                                                    board_state[2],
-                                                   )
-                current_game_move[current_player] += [(srow, scol)]
-                move = (trow, tcol)
+                move, tran_move = decideplay(board_state[0],
+                                             board_state[2])
+
+                current_game_move[current_player] += [tran_move]
+
             # Make the move, and update state
             state = updateboard(state, move, current_player)
 

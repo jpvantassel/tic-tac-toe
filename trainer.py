@@ -3,13 +3,15 @@ import pickle
 import os
 from checkwin import checkwin
 from decideplay import decideplay
-from evalboard import evalboard, setdiffuse, nd3_to_tuple
+from evalboard import evalboard, set_diffuse, nd3_to_tuple
+from transform import board_transform
+from inversetransform import board_itransform
 from updateboard import updateboard
 
 # Input
 p1 = 1
 p2 = 2
-number_simulation = 1
+number_simulation = 1000
 file_name_p1 = "training_p1_"+str(number_simulation)
 file_name_p2 = "training_p2_"+str(number_simulation)
 reward_win = 1
@@ -39,11 +41,11 @@ for simulation in range(number_simulation):
     for game_move in range(5):
         # Switch between players
         for current_player in (p1, p2):
-            board_state = evalboard(state, 
+            board_state = evalboard(state,
                                     boards_played[current_player],
                                     p1=p1,
                                     p2=p2,
-                                   )
+                                    )
             # Transformed gameboard key
             current_game_boards[current_player] += [board_state[1]]
 
@@ -53,13 +55,13 @@ for simulation in range(number_simulation):
                     {board_state[1]: board_state[0]})
 
             # Decide the move
-            srow, scol, trow, tcol = decideplay(board_state[0], 
-                                                board_state[2],
-                                                )
-            current_game_move[current_player] += [(srow, scol)]
+            true_move, tran_move = decideplay(board_state[0],
+                                              board_state[2])
+            # Save tranformed movement
+            current_game_move[current_player] += [tran_move]
 
             # Make the move, and update state
-            state = updateboard(state, (trow, tcol), current_player)
+            state = updateboard(state, true_move, current_player)
 
             # Check if there is a winner, after three moves, as none before.
             if game_move >= 2:
