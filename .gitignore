@@ -1,0 +1,8 @@
+#Folders
+.ipynb_checkpoints
+__pycache__
+TrainingSets
+
+#Files
+*.ipynb
+training_*
