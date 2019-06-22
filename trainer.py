@@ -9,7 +9,7 @@ from updateboard import updateboard
 # Input
 p1 = 1
 p2 = 2
-number_simulation = 100000000
+number_simulation = 100
 file_name_p1 = "training_p1_"+str(number_simulation)
 file_name_p2 = "training_p2_"+str(number_simulation)
 reward_win = 1
@@ -26,7 +26,6 @@ for player in (p1, p2):
         boards_played[player] = {}
 
 # Loop through a number of models
-
 for simulation in range(number_simulation):
 
     # Initialize new game
@@ -40,21 +39,26 @@ for simulation in range(number_simulation):
     for game_move in range(5):
         # Switch between players
         for current_player in (p1, p2):
-            board_state = evalboard(
-                state, boards_played[current_player], p1=p1, p2=p2)
-            prob = board_state[0]
+            board_state = evalboard(state, 
+                                    boards_played[current_player],
+                                    p1=p1,
+                                    p2=p2,
+                                   )
             current_game_boards[current_player] += [board_state[1]]
-            # Add entry to the boards_played
-            if len(board_state) > 2:
+
+            # Add entry to the boards_played, if new
+            if len(board_state) > 3:
                 boards_played[current_player].update(
                     {board_state[1]: board_state[0]})
 
             # Decide the move
-            move = decideplay(prob)
-            current_game_move[current_player] += [move]
+            srow, scol, trow, tcol = decideplay(board_state[0], 
+                                                board_state[2],
+                                                )
+            current_game_move[current_player] += [(trow, tcol)]
 
             # Make the move, and update state
-            state = updateboard(state, move, current_player)
+            state = updateboard(state, (srow, scol), current_player)
 
             # Check if there is a winner, after three moves, as none before.
             if game_move >= 2:
@@ -63,7 +67,7 @@ for simulation in range(number_simulation):
                     winning_player = current_player
                     losing_player = p1 if current_player == p2 else p2
                     break
-                elif ((game_move==4) & (current_player==p1)):
+                elif ((game_move == 4) & (current_player == p1)):
                     draw = True
                     break
             if win | draw:
