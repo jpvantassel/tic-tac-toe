@@ -50,11 +50,11 @@ def evalboard(state, boards_played, p1=1, p2=2):
 def setdiffuse(state, p1=1, p2=2):
     # Set all values not equal to p1 or p2 to diffuse utility
     row, col = np.where((state != p1) & (state != p2))
-    prob = np.ones((3, 3))*-np.inf
-    dif_prob = 0
+    utility = np.ones((3, 3))*-np.inf
+    diffuse_utility = 0
     for rid, cid in zip(row, col):
-        prob[rid][cid] = dif_prob
-    return prob
+        utility[rid][cid] = diffuse_utility
+    return utility
 
 
 def nd3_to_tuple(array):
@@ -88,11 +88,14 @@ class TestModuleImport(unittest.TestCase):
     def test_transform(self):
         board_1 = np.array([[1, 1, 0], [0, 0, 0], [0, 0, 0]])
         a1, b1, c1, d1 = evalboard(board_1, {}, p1=1, p2=2)
-
-        self.assertEqual(c1, 0)
+        print(a1)
+        print(b1)
+        self.assertEqual(c1, 7)
         self.assertTrue(d1)
         board_2 = np.array([[1, 0, 0], [1, 0, 0], [0, 0, 0]])
-        _, _, c2 = evalboard(board_2, {b1: a1}, p1=1, p2=2)
+        a2, b2, c2 = evalboard(board_2, {b1: a1}, p1=1, p2=2)
+        print(a2)
+        print(b2)
         self.assertEqual(c2, 2)
 
 

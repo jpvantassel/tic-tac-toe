@@ -9,7 +9,7 @@ from updateboard import updateboard
 # Input
 p1 = 1
 p2 = 2
-number_simulation = 100
+number_simulation = 1
 file_name_p1 = "training_p1_"+str(number_simulation)
 file_name_p2 = "training_p2_"+str(number_simulation)
 reward_win = 1
@@ -44,6 +44,7 @@ for simulation in range(number_simulation):
                                     p1=p1,
                                     p2=p2,
                                    )
+            # Transformed gameboard key
             current_game_boards[current_player] += [board_state[1]]
 
             # Add entry to the boards_played, if new
@@ -55,10 +56,10 @@ for simulation in range(number_simulation):
             srow, scol, trow, tcol = decideplay(board_state[0], 
                                                 board_state[2],
                                                 )
-            current_game_move[current_player] += [(trow, tcol)]
+            current_game_move[current_player] += [(srow, scol)]
 
             # Make the move, and update state
-            state = updateboard(state, (srow, scol), current_player)
+            state = updateboard(state, (trow, tcol), current_player)
 
             # Check if there is a winner, after three moves, as none before.
             if game_move >= 2:

@@ -22,7 +22,7 @@ while ask_for_input:
 ask_for_input = True
 while ask_for_input:
     difficulty = input("Please enter game difficulty E, M, or H: ")
-    if difficulty in ("E", "M", "H"):
+    if difficulty in ("E", "M", "H", "T"):
         ask_for_input = False
     else:
         print("Diffculty setting {} not recognized, enter E, M, or H".format(difficulty))
@@ -34,6 +34,8 @@ elif difficulty in ("M",):
     number_simulation = 1000000
 elif difficulty in ("H",):
     number_simulation = 100000000
+elif difficulty in ("T",):
+    number_simulation = 1
 
 # Decide on which file to load
 if human_player == 1:
@@ -81,18 +83,23 @@ while continue_playing:
             if current_player == human_player:
                 move = plotforhuman(state, current_player)
             else:
-                board_state = evalboard(
-                    state, boards_played[current_player], p1=p1, p2=p2)
-                prob = board_state[0]
+                board_state = evalboard(state, 
+                                        boards_played[current_player],
+                                        p1=p1,
+                                        p2=p2,
+                                       )
                 current_game_boards[current_player] += [board_state[1]]
+
                 # Add entry to the boards_played
-                if len(board_state) > 2:
+                if len(board_state) > 3:
                     boards_played[current_player].update(
                         {board_state[1]: board_state[0]})
                 # Decide the move
-                move = decideplay(prob)
-                current_game_move[current_player] += [move]
-
+                srow, scol, trow, tcol = decideplay(board_state[0], 
+                                                    board_state[2],
+                                                   )
+                current_game_move[current_player] += [(srow, scol)]
+                move = (trow, tcol)
             # Make the move, and update state
             state = updateboard(state, move, current_player)
 
