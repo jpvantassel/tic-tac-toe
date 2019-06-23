@@ -7,12 +7,12 @@ from evalboard import evalboard, set_diffuse, nd3_to_tuple
 from transform import board_transform
 from inversetransform import board_itransform
 from updateboard import updateboard
-from updateutility import update_utility_winner, update_utility_loser, flip_player
+from updateutility import update_utility, flip_player
 
 # Input
 p1 = 1
 p2 = 2
-number_simulation = 10000
+number_simulation = 100000
 file_name_p1 = "training_p1_"+str(number_simulation)
 file_name_p2 = "training_p2_"+str(number_simulation)
 reward_win = 1
@@ -29,6 +29,7 @@ for player in (p1, p2):
         boards_played[player] = {}
 
 # Loop through a number of models
+training_summary = []
 for simulation in range(number_simulation):
 
     # Initialize new game
@@ -81,23 +82,35 @@ for simulation in range(number_simulation):
 
     # Update utility
     if win:
-        boards_played = update_utility_winner(boards_played,
-                                              current_game_boards,
-                                              current_game_move,
-                                              winning_player,
-                                              losing_player,
-                                              reward_win,
-                                              punish_loss)
-
-        boards_played = update_utility_loser(boards_played,
-                                              current_game_boards,
-                                              current_game_move,
-                                              winning_player,
-                                              losing_player,
-                                              reward_win,
-                                              punish_loss)
+        # Update player 1
+        boards_played = update_utility(boards_played,
+                                       current_game_boards,
+                                       current_game_move,
+                                       p1,
+                                       winning_player,
+                                       losing_player,
+                                       reward_win,
+                                       punish_loss,
+                                       flag_indirect=True,
+                                       )
+        # Update player 2
+        boards_played = update_utility(boards_played,
+                                       current_game_boards,
+                                       current_game_move,
+                                       p2,
+                                       winning_player,
+                                       losing_player,
+                                       reward_win,
+                                       punish_loss,
+                                       flag_indirect=True,
+                                       )
+    # Save training, win p1=1, win p2=2, tie=0
+    training_summary += [winning_player] if win else [0]
 
 # Save out training
 for player in (p1, p2):
     with open(fnames[player], "wb") as f:
         pickle.dump((boards_played[player]), f)
+# Save training
+with open("LC_"+str(number_simulation), "wb") as f:
+    pickle.dump(training_summary,f)

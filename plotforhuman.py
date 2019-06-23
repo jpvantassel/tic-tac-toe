@@ -3,6 +3,7 @@ This function plots out the current board state, and allows the human
 to select where to play using curson click.
 """
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import unittest
@@ -31,6 +32,8 @@ def plotstate(board):
     x = [1, 2, 3]
     y = [3, 2, 1]
     fig, ax = plt.subplots(figsize=(5, 5))
+    fig.canvas.manager.window.wm_geometry("+500+100")
+
     # Show current board state
     ax.imshow(board)
     linewidth = 5

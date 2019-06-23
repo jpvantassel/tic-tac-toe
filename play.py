@@ -1,6 +1,7 @@
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import os
 from checkwin import checkwin
 from decideplay import decideplay
@@ -9,6 +10,7 @@ from transform import board_transform
 from inversetransform import board_itransform
 from updateboard import updateboard
 from plotforhuman import determinecell, updateplot, plotstate, plotforhuman
+from updateutility import update_utility, flip_player
 
 
 # Decide on current player
@@ -31,9 +33,9 @@ while ask_for_input:
 
 # Decide on difficulty
 if difficulty in ("E",):
-    number_simulation = 10000
+    number_simulation = 1000
 elif difficulty in ("M",):
-    number_simulation = 1000000
+    number_simulation = 100000
 elif difficulty in ("H",):
     number_simulation = 100000000
 elif difficulty in ("T",):
@@ -123,22 +125,21 @@ while continue_playing:
 
     # Update utility
     if win:
-        if winning_player == human_player:
-            fig, ax = plotstate(state)
-            plt.title("You Win!")
-            fig.show()
-            for key, move in zip(current_game_boards[losing_player], current_game_move[losing_player]):
-                delta = np.zeros((3, 3))
-                delta[move[0]][move[1]] += punish_loss
-                boards_played[losing_player][key] += delta
-        else:
-            fig, ax = plotstate(state)
-            plt.title("Computer Wins!")
-            fig.show()
-            for key, move in zip(current_game_boards[winning_player], current_game_move[winning_player]):
-                delta = np.zeros((3, 3))
-                delta[move[0]][move[1]] += reward_win
-                boards_played[winning_player][key] += delta
+        fig, ax = plotstate(state)
+        txt="You Win!" if winning_player is human_player else "Computer Wins!"
+        plt.title(txt)    
+        fig.show()
+
+        boards_played = update_utility(boards_played,
+                                        current_game_boards,
+                                        current_game_move,
+                                        machine_player,
+                                        winning_player,
+                                        losing_player,
+                                        reward_win,
+                                        punish_loss,
+                                        flag_indirect=False,
+                                        )
 
     # Decide if you want to continue
     ask_for_input = True
@@ -148,6 +149,7 @@ while continue_playing:
             ask_for_input = False
             continue_playing = False
         elif continue_text == "Y":
+            plt.close('all')
             ask_for_input = False
         else:
             print("Response {} not recognized, use Y or N".format(continue_text))
