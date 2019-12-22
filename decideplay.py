@@ -6,7 +6,7 @@ the move will maximize utility).
 
 import numpy as np
 import unittest
-from inversetransform import board_itransform
+from transform import board_itransform
 
 def decideplay(utility, trans_number):
     # Find location of maximum utility, rows and cols are an np.array 
@@ -31,7 +31,7 @@ def decideplay(utility, trans_number):
     return ( (true_row[0], true_col[0]) , (tran_row, tran_col) )
 
 
-class TestModuleImport(unittest.TestCase):
+class Test_DecidePlay(unittest.TestCase):
     def test_knownmove(self):
         game = np.array([[-np.inf, -np.inf, 9], [0, 0, -np.inf], [2, 1, 0]])
         true_move, tran_move = decideplay(game, 7)

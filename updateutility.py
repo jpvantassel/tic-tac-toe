@@ -1,12 +1,8 @@
-"""
-Update utility for a single player, using own and opponent moves if
-desired.
-"""
+"""Functions to update board utility."""
 
 import numpy as np
 import unittest
-from transform import board_transform
-from inversetransform import board_itransform
+from transform import board_transform, board_itransform
 from evalboard import nd3_to_tuple
 
 
@@ -51,7 +47,7 @@ def flip_player(state, p1=1, p2=2):
     return state
 
 
-class TestModuleImport(unittest.TestCase):
+class Test_UpdateUtility(unittest.TestCase):
     def test_flip_player(self):
         state = np.array([[1, 2, 1], [2, 1, 2], [1, 2, 1]])
         flip_true = np.array([[2, 1, 2], [1, 2, 1], [2, 1, 2]])
