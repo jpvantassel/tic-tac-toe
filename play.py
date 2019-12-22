@@ -1,3 +1,5 @@
+"""Module to play against trained tic-tac-toe algorithm."""
+
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
@@ -5,9 +7,8 @@ import matplotlib as mpl
 import os
 from checkwin import checkwin
 from decideplay import decideplay
-from evalboard import evalboard, set_diffuse, nd3_to_tuple
-from transform import board_transform
-from inversetransform import board_itransform
+from evalboard import viewboard, nd3_to_tuple, diffuse
+from transform import board_transform, board_itransform
 from updateboard import updateboard
 from plotforhuman import determinecell, updateplot, plotstate, plotforhuman
 from updateutility import update_utility, flip_player
@@ -33,7 +34,7 @@ while ask_for_input:
 
 # Decide on difficulty
 if difficulty in ("E",):
-    number_simulation = 1000
+    number_simulation = 10000
 elif difficulty in ("M",):
     number_simulation = 100000
 elif difficulty in ("H",):
@@ -85,27 +86,50 @@ while continue_playing:
         # Switch between players
         for current_player in players:
             if current_player == human_player:
-                move = plotforhuman(state, current_player)
+                true_move = plotforhuman(state, current_player)
             else:
-                board_state = evalboard(state,
-                                        boards_played[current_player],
-                                        p1=p1,
-                                        p2=p2,
-                                        )
-                current_game_boards[current_player] += [board_state[1]]
+                # Check if board has been seen before
+                seen_before, key, trans_number = viewboard(state,
+                                                        boards_played[current_player],
+                                                        p1=p1,
+                                                        p2=p2)
 
-                # Add entry to the boards_played
-                if len(board_state) > 3:
-                    boards_played[current_player].update(
-                        {board_state[1]: board_state[0]})
+                # If seen before -> recall; otherwise -> diffuse
+                if seen_before:
+                    board_state = boards_played[current_player][key]
+                else:
+                    board_state = diffuse(state, p1=p1, p2=p2)
+                    boards_played[current_player].update({key: board_state})
+
+                # Transformed gameboard key
+                current_game_boards[current_player] += [key]
+
                 # Decide the move
-                move, tran_move = decideplay(board_state[0],
-                                             board_state[2])
+                true_move, tran_move = decideplay(board_state, trans_number)
 
+                # Save tranformed movement
                 current_game_move[current_player] += [tran_move]
 
+
+                # board_state = evalboard(state,
+                #                         boards_played[current_player],
+                #                         p1=p1,
+                #                         p2=p2,
+                #                         )
+                # current_game_boards[current_player] += [board_state[1]]
+
+                # # Add entry to the boards_played
+                # if len(board_state) > 3:
+                #     boards_played[current_player].update(
+                #         {board_state[1]: board_state[0]})
+                # # Decide the move
+                # move, tran_move = decideplay(board_state[0],
+                #                              board_state[2])
+
+                # current_game_move[current_player] += [tran_move]
+
             # Make the move, and update state
-            state = updateboard(state, move, current_player)
+            state = updateboard(state, true_move, current_player)
 
             # Check if there is a winner, after three moves, as none before.
             if game_move >= 2:
