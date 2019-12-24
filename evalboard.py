@@ -13,15 +13,16 @@ from transform import board_transform
 def recall_board(state, boards_played, p1=1, p2=2):
     """Determine if board (or equvialent) has been seen before."""
 
-    # Check if the board (or eqivalent) has been seen before
+    # Check if the board (or eqivalent) has been seen before.
     for trans_number in range(8):
         trans_state = board_transform(state, trans_number)
         key = nd3_to_tuple(trans_state)
 
-        # If it is found return boards utility
+        # If it is found return key representing transformed board.
         if key in boards_played:
             return (True, key, trans_number)
 
+    # Otherwise return current board.
     return (False, nd3_to_tuple(state), 0)
 
 
@@ -33,6 +34,12 @@ def diffuse_utility(state, p1=1, p2=2):
     diffuse_utility = 0
     for rid, cid in zip(row, col):
         utility[rid][cid] = diffuse_utility
+
+    # Check that do not overwrite utility value
+    for util_val, state_val in zip(utility.flatten(), state.flatten()):
+        if state_val == -np.inf:
+            assert(util_val==-np.inf)
+
     return utility
 
 
