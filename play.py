@@ -1,4 +1,4 @@
-"""Module to play against trained tic-tac-toe algorithm."""
+"""Module to play against trained algorithm."""
 
 import numpy as np
 import pickle
@@ -7,12 +7,17 @@ import matplotlib as mpl
 import os
 from checkwin import checkwin
 from decideplay import decideplay
-from evalboard import viewboard, nd3_to_tuple, diffuse
+from evalboard import recall_board, diffuse_utility, nd3_to_tuple
 from transform import board_transform, board_itransform
-from updateboard import updateboard
-from plotforhuman import determinecell, updateplot, plotstate, plotforhuman
+from updateboard import make_move
+from plot import plotforhuman, plot_state
 from updateutility import update_utility, flip_player
 
+# Additional Settings
+save_update = False
+reward_win = 4
+punish_loss = -1
+flag_indirect = True
 
 # Decide on current player
 ask_for_input = True
@@ -58,10 +63,6 @@ else:
     p1 = machine_player
     p2 = human_player
 
-# Default settings
-reward_win = 1
-punish_loss = -1
-
 # Load previous training sets for computer
 boards_played = {}
 if os.path.isfile(fnames[machine_player]):
@@ -89,16 +90,16 @@ while continue_playing:
                 true_move = plotforhuman(state, current_player)
             else:
                 # Check if board has been seen before
-                seen_before, key, trans_number = viewboard(state,
-                                                        boards_played[current_player],
-                                                        p1=p1,
-                                                        p2=p2)
+                seen_before, key, trans_number = recall_board(state,
+                                                              boards_played[current_player],
+                                                              p1=p1,
+                                                              p2=p2)
 
                 # If seen before -> recall; otherwise -> diffuse
                 if seen_before:
                     board_state = boards_played[current_player][key]
                 else:
-                    board_state = diffuse(state, p1=p1, p2=p2)
+                    board_state = diffuse_utility(state, p1=p1, p2=p2)
                     boards_played[current_player].update({key: board_state})
 
                 # Transformed gameboard key
@@ -110,26 +111,8 @@ while continue_playing:
                 # Save tranformed movement
                 current_game_move[current_player] += [tran_move]
 
-
-                # board_state = evalboard(state,
-                #                         boards_played[current_player],
-                #                         p1=p1,
-                #                         p2=p2,
-                #                         )
-                # current_game_boards[current_player] += [board_state[1]]
-
-                # # Add entry to the boards_played
-                # if len(board_state) > 3:
-                #     boards_played[current_player].update(
-                #         {board_state[1]: board_state[0]})
-                # # Decide the move
-                # move, tran_move = decideplay(board_state[0],
-                #                              board_state[2])
-
-                # current_game_move[current_player] += [tran_move]
-
             # Make the move, and update state
-            state = updateboard(state, true_move, current_player)
+            state = make_move(state, true_move, current_player)
 
             # Check if there is a winner, after three moves, as none before.
             if game_move >= 2:
@@ -139,7 +122,7 @@ while continue_playing:
                     losing_player = p1 if current_player == p2 else p2
                 elif ((game_move == 4) & (current_player == p1)):
                     draw = True
-                    fig, ax = plotstate(state)
+                    fig, ax = plot_state(state)
                     plt.title("It's a Tie!")
                     fig.show()
             if win | draw:
@@ -149,21 +132,21 @@ while continue_playing:
 
     # Update utility
     if win:
-        fig, ax = plotstate(state)
-        txt="You Win!" if winning_player is human_player else "Computer Wins!"
-        plt.title(txt)    
+        fig, ax = plot_state(state)
+        txt = "You Win!" if winning_player is human_player else "Computer Wins!"
+        plt.title(txt)
         fig.show()
 
         boards_played = update_utility(boards_played,
-                                        current_game_boards,
-                                        current_game_move,
-                                        machine_player,
-                                        winning_player,
-                                        losing_player,
-                                        reward_win,
-                                        punish_loss,
-                                        flag_indirect=False,
-                                        )
+                                       current_game_boards,
+                                       current_game_move,
+                                       machine_player,
+                                       winning_player,
+                                       losing_player,
+                                       reward_win,
+                                       punish_loss,
+                                       flag_indirect=flag_indirect,
+                                       )
 
     # Decide if you want to continue
     ask_for_input = True
@@ -179,5 +162,6 @@ while continue_playing:
             print("Response {} not recognized, use Y or N".format(continue_text))
 
 # Save out training
-with open(fnames[machine_player], "wb") as f:
-    pickle.dump((boards_played[machine_player]), f)
+if save_update:
+    with open(fnames[machine_player], "wb") as f:
+        pickle.dump((boards_played[machine_player]), f)
