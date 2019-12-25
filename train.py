@@ -5,19 +5,23 @@ import pickle
 import os
 from checkwin import checkwin
 from decideplay import decideplay
-from evalboard import viewboard, diffuse, nd3_to_tuple, tuple_to_nd3
+from evalboard import recall_board, diffuse_utility, nd3_to_tuple, tuple_to_nd3
 from transform import board_transform, board_itransform
-from updateboard import updateboard
+from updateboard import make_move
 from updateutility import update_utility, flip_player
 
 # Input
 p1 = 1
 p2 = 2
-use_prob_p1 = True
+use_prob_p1 = False
 use_prob_p2 = False
-number_simulation = 1
+number_simulation = 10000
 file_name_p1 = "training_p1_"+str(number_simulation)
 file_name_p2 = "training_p2_"+str(number_simulation)
+file_name_lc = "LC_"+str(number_simulation)
+# file_name_p1 = "training_p1_10_sets_10k_9"
+# file_name_p2 = "training_p2_10_sets_10k_9"
+# file_name_lc = "lc_10_sets_10k_9"
 reward_win = 2
 punish_loss = -1
 
@@ -48,18 +52,18 @@ for simulation in range(number_simulation):
         for current_player in (p1, p2):
 
             # Check if board has been seen before
-            seen_before, key, trans_number = viewboard(state,
-                                                       boards_played[current_player],
-                                                       p1=p1,
-                                                       p2=p2)
+            seen_before, key, trans_number = recall_board(state,
+                                                          boards_played[current_player],
+                                                          p1=p1,
+                                                          p2=p2)
 
-            # Logic to decide if previous utility will be used 
-            if current_player==p1:
+            # Logic to decide if previous utility will be used
+            if current_player == p1:
                 use_prob = True if use_prob_p1 else False
-            elif current_player==p2:
+            elif current_player == p2:
                 use_prob = True if use_prob_p2 else False
             else:
-                raise RuntimeError("Player unkown.")
+                raise RuntimeError("Player unknown!")
 
             # If seen before and using past info -> recall
             # If seen before and not using prob -> set diffuse
@@ -68,11 +72,10 @@ for simulation in range(number_simulation):
                 if use_prob:
                     board_state = boards_played[current_player][key]
                 else:
-                    board_state = diffuse(tuple_to_nd3(key), p1=p1, p2=p2)
+                    board_state = diffuse_utility(tuple_to_nd3(key), p1=p1, p2=p2)
             else:
-                board_state = diffuse(state, p1=p1, p2=p2)
+                board_state = diffuse_utility(state, p1=p1, p2=p2)
                 boards_played[current_player].update({key: board_state})
-
 
             # Transformed gameboard key
             current_game_boards[current_player] += [key]
@@ -84,11 +87,8 @@ for simulation in range(number_simulation):
             current_game_move[current_player] += [tran_move]
 
             # Make the move, and update state
-            state = updateboard(state, true_move, current_player)
+            state = make_move(state, true_move, current_player)
 
-            if current_player == p2:
-                print(state)
-                
             # Check if there is a winner, after three moves, as none before.
             if game_move >= 2:
                 win = checkwin(state, p1=p1, p2=p2)
@@ -104,9 +104,9 @@ for simulation in range(number_simulation):
         if win | draw:
             break
 
-
     # Update utility
     if win:
+
         # Update player 1
         boards_played = update_utility(boards_played,
                                        current_game_boards,
@@ -139,5 +139,5 @@ for player in (p1, p2):
         pickle.dump((boards_played[player]), f)
 
 # Save win, loss, tie training information.
-with open("LC_"+str(number_simulation), "wb") as f:
+with open(file_name_lc, "wb") as f:
     pickle.dump(training_summary, f)

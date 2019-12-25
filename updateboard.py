@@ -7,11 +7,7 @@ import unittest
 def make_move(state, coord, currentplayer):
     """Update the current board using a coordinate pair and the current
     player."""
-    row, col = coord
-
-    if state[row, col] == -np.inf:
-        raise RuntimeError("Attempted to overwrite, occupied cell.")
-    
+    row, col = coord    
     state[row, col] = currentplayer
     return state
 

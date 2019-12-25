@@ -34,12 +34,6 @@ def diffuse_utility(state, p1=1, p2=2):
     diffuse_utility = 0
     for rid, cid in zip(row, col):
         utility[rid][cid] = diffuse_utility
-
-    # Check that do not overwrite utility value
-    for util_val, state_val in zip(utility.flatten(), state.flatten()):
-        if state_val == -np.inf:
-            assert(util_val==-np.inf)
-
     return utility
 
 
