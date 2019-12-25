@@ -4,8 +4,4 @@ __pycache__
 TrainingSets
 /Sim*
 .vscode
-LC*
 
-#Files
-*.ipynb
-training_*
