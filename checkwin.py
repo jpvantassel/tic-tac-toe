@@ -1,7 +1,5 @@
-"""
-Check if someone has won the game. 
-True if some has won; false otherwise.
-"""
+"""Check if someone has won the game. True if some has won; false
+otherwise."""
 import numpy as np
 import unittest
 
@@ -52,7 +50,7 @@ def checkwin(state, p1=1, p2=2):
                 win=True
     return win
 
-class TestModuleImport(unittest.TestCase):
+class Test_CheckWin(unittest.TestCase):
 
     def test_win(self):
         # Win Bottom Row
