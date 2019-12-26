@@ -1,0 +1,7 @@
+p1s = [59.0, 59.0, 59.3, 60.0, 58.6, 58.5, 58.1, 58.6, 58.4, 59.7]
+p2s = [28.3, 28.5, 28.9, 27.2, 28.3, 28.6, 29.2, 28.5, 29.3, 28.7]
+tie = [12.8, 12.5, 11.8, 12.8, 13.0, 13.0, 12.7, 12.9, 12.3, 11.6]
+
+print(f"Player 1 wins {np.round(np.mean(p1s),1)} +/- {np.round(np.std(p1s, ddof=1),1)}")
+print(f"Player 2 wins {np.round(np.mean(p2s),1)} +/- {np.round(np.std(p2s, ddof=1),1)}")
+print(f"Players Tie {np.round(np.mean(tie),1)} +/- {np.round(np.std(tie, ddof=1),1)}")

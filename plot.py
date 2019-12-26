@@ -38,6 +38,12 @@ def plot_state(board, ax=None):
 
     # Show current board state
     cmap = plt.get_cmap("plasma")
+    # colors = [["#deeaee"], #violet
+    #           ["#b1cbbb"], # pink
+    #           ["#eea29a"]] # green
+    # colors = tuple(int(colors[i:i+2], 16) for i in (0, 2, 4)))
+    # cmap = mpl.colors.ListedColormap(colors)
+
     ax.imshow(board, cmap=cmap)
     linewidth = 5
     ax.plot([0.5, 0.5], [-0.5, 2.5], '-k', linewidth=linewidth)
@@ -68,7 +74,7 @@ def plot_utility(utility, ax=None):
         _, ax = plt.subplots(nrows=1, ncols=1, figsize=(5, 5))
 
     cmap = plt.get_cmap("winter")
-    ax.imshow(utility, vmin=-1, vmax=1, cmap=cmap)
+    ax.imshow(utility, cmap=cmap)
     # Loop over data dimensions and create text showing the value.
     for row in range(len(y)):
         for col in range(len(x)):
@@ -97,8 +103,11 @@ def plotforhuman(board, current_player):
         updateplot('Select the Desired Cell')
         while not good_move:
             pt = plt.ginput(1, timeout=-1)
-            row, col, good_move = determinecell(
-                board, pt[-1], bounds_x, bounds_y)
+            if len(pt) == 0:
+                good_move = False
+            else:
+                row, col, good_move = determinecell(board, pt[-1],
+                                                    bounds_x, bounds_y)
             if not good_move:
                 updateplot('Move is not Allowed. Select Again')
 
@@ -106,18 +115,21 @@ def plotforhuman(board, current_player):
                        color="k", size=50)
         updateplot('Happy with Move? Key=Yes, Mouse=No.')
         if plt.waitforbuttonpress():
+
             break
         text.remove()
         good_move = False
 
     return (row, col)
 
+
 def view_state_and_utility(state, utility):
-    fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(10,5))
+    fig, axs = plt.subplots(nrows=1, ncols=2, figsize=(10, 5))
     plot_state(state, axs[0])
     plot_utility(utility, axs[1])
     fig.tight_layout()
     plt.show()
+
 
 class Test_Plot(unittest.TestCase):
     def test_determinecell(self):

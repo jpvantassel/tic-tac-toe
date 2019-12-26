@@ -10,20 +10,33 @@ from transform import board_transform, board_itransform
 from updateboard import make_move
 from updateutility import update_utility, flip_player
 
-# Input
+#-----------------------------------------------------------------------
+# Beginning of Inputs
+
+# Player 1 (i.e. p1) and Player 2 (i.e. p2) numeric representation.
 p1 = 1
 p2 = 2
+
+# Should training consider previously received rewards or punishments.
 use_prob_p1 = False
 use_prob_p2 = False
+
+# Number of simulations to perform during training.
 number_simulation = 10000
+
+# Name of training file for p1 and p2
 file_name_p1 = "training_p1_"+str(number_simulation)
 file_name_p2 = "training_p2_"+str(number_simulation)
+
+# Name of file for learning curve (i.e. LC) may be viewed using vis_training.ipynb.
 file_name_lc = "LC_"+str(number_simulation)
-# file_name_p1 = "training_p1_10_sets_10k_9"
-# file_name_p2 = "training_p2_10_sets_10k_9"
-# file_name_lc = "lc_10_sets_10k_9"
+
+# Reward for win and punishment for loss.
 reward_win = 2
 punish_loss = -1
+
+# End of Inputs
+#-----------------------------------------------------------------------
 
 # Load previous training sets
 boards_played = {}

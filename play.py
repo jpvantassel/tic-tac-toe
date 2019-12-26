@@ -13,11 +13,21 @@ from updateboard import make_move
 from plot import plotforhuman, plot_state
 from updateutility import update_utility, flip_player
 
-# Additional Settings
+#-----------------------------------------------------------------------
+# Beginning of Inputs
+
+# Should updated memory set be saved after play.
 save_update = False
-reward_win = 4
-punish_loss = -1
+
+# Should machine consider indirect learning.
 flag_indirect = True
+
+# Reward for win and punishment for loss.
+reward_win = 5
+punish_loss = -1
+
+# End of Inputs
+#-----------------------------------------------------------------------
 
 # Decide on current player
 ask_for_input = True
@@ -31,32 +41,32 @@ while ask_for_input:
 # Enter game difficulty
 ask_for_input = True
 while ask_for_input:
-    difficulty = input("Please enter game difficulty E, M, or H: ")
-    if difficulty in ("E", "M", "H", "T"):
+    difficulty = input("Please enter game difficulty E, M, H, or I: ")
+    if difficulty in ("E", "M", "H", "I"):
         ask_for_input = False
     else:
-        print("Diffculty setting {} not recognized, enter E, M, or H".format(difficulty))
+        print("Diffculty setting {} not recognized, enter E, M, H, or I".format(difficulty))
 
 # Decide on difficulty
 if difficulty in ("E",):
-    number_simulation = 10000
+    number_simulation = 100
 elif difficulty in ("M",):
-    number_simulation = 100000
+    number_simulation = 1000
 elif difficulty in ("H",):
-    number_simulation = 100000000
-elif difficulty in ("T",):
-    number_simulation = 1
+    number_simulation = 10000
+elif difficulty in ("I",):
+    number_simulation = 100000
 
 # Decide on which file to load
 if human_player == 1:
-    file_name_p2 = "training_p2_"+str(number_simulation)
+    file_name_p2 = "pre_trained_sets/training_p2_"+str(number_simulation)
     machine_player = 2
     fnames = {machine_player: file_name_p2}
     players = (human_player, machine_player)
     p1 = human_player
     p2 = machine_player
 else:
-    file_name_p1 = "training_p1_"+str(number_simulation)
+    file_name_p1 = "pre_trained_sets/training_p1_"+str(number_simulation)
     machine_player = 1
     fnames = {machine_player: file_name_p1}
     players = (machine_player, human_player)
