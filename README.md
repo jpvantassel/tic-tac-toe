@@ -7,8 +7,8 @@
 This repository includes Python modules for developing a memory-based
 tic-tac-toe playing algorithm using reinforcement learning.
 
-The repostory includes two modules of interest `train.py` and `play.py`. _Note:
-The other modules in this repository contain functions to support these two main
+The repostory includes two modules of interest `train.py` and `play.py`. _Note
+the other modules in this repository contain functions to support these two main
 modules._
 
 - `train.py` is for training new memory sets, and is discussed
@@ -63,22 +63,24 @@ for your convenience.
 
 The algorithm can exploit the symmetry of the tic-tac-toe board to reduce the
 number of possible boards in its memory set. The eight cases (i.e., the original
-and seven transformations) checked by the program are
-shown in the jupyter notebook `vis_boardtransform.ipynb`. The implementation of
-the board transformation and inverse transformations are located in the
+and seven transformations) checked by the program are visualized in the jupyter
+notebook `vis_boardtransform.ipynb`. The implementation of
+the board transformations and inverse transformations are located in the
 `transform.py` module.
 
 #### Indirect Learning
 
 After each training simulation the moves of the winner are rewarded and the
 loser punished, however when indirect learning is utilized the winner and loser
-are both able to learn from the win and loss. Let us consider the effect of
+are both able to learn from the win and loss.
+
+Let us consider the effect of
 indirect learning on the winner. First, the winner is rewarded for its winning
 movements. If indirect learning was not used this would be the end of the
 updating phase. However, with indirect learning enabled the winner is then
 punished for the losing movements of the other player as if their roles had been
 reversed. In this way both the winner and loser are both rewarded for the
-winning moves and punsihed for the losing moves allowing for greater training
+winning moves and punished for the losing moves allowing for greater training
 efficiency.
 
 ## Playing Against a Trained Memory Set
@@ -100,7 +102,7 @@ author's conclusion on the questions considered.
 
 To investigate this a training session of 10,000 models was post-processed using
 the jupyter notebook `vis_training.ipynb`. Figure 1 shows the board state
-considered (i.e., empyt board) on the left and the assigned utility to each move
+considered (i.e., empty board) on the left and the assigned utility to each move
 on the right.
 
 __Figure 1:__ Board state considered (left) and utility of each move (right).
@@ -117,7 +119,7 @@ To investigate this in detail five different trainings each using a different
 number of simulations were performed. For each simulation both player 1 and
 player 2 played randomly (i.e., the results of previous games were not
 used/recalled when selecting the next move). However, indirect learning at the
-end of each game was used to expedite the learning process. Table 1 summarzines
+end of each game was used to expedite the learning process. Table 1 summarizes
 the results.
 
 __Table 1:__ Summary of win/loss/draw for five trainings when Player 1 and
@@ -131,15 +133,15 @@ Player 2 were playing randomly.
 |  50,000               | 58.2              | 29.0              | 12.8             |
 | 100,000               | 58.5              | 28.8              | 12.7             |
 
-Table 1 clearly shows reguardless of the number of simulations considered (i.e.,
+Table 1 clearly shows regardless of the number of simulations considered (i.e.,
 robustness of the probability estimate) Player 1 has a distinct advantage
 (i.e., ~30%) over Player 2.
 
-Since these are estimates of the true probabilities it is important to quantify
-their uncertainty to lend confidence to the previous assertion. This was done
-by performing 10 sets of 10,000 simulations and considering their solution as a
-representative sample set of the true probability. The results are shown in
-Table 2.
+Since these are only estimates of the true probabilities it is important to
+quantify their uncertainty to lend confidence to the previous assertion. This
+was done by performing 10 sets of 10,000 simulations and considering their
+solution as a representative sample set of the true probability. The results are
+shown in Table 2.
 
 __Table 2:__ Summary of win/loss/draw with uncertainty (i.e., 68 % confidence
 interval) from 10 simulations of 10,000 simulations each.
@@ -149,5 +151,5 @@ interval) from 10 simulations of 10,000 simulations each.
 | 58.9 +/- 0.6      | 28.6 +/- 0.6      | 12.5 +/- 0.5     |
 
 Table 2 confirms that the uncertianty in the simulation is not signficant enough
-to confound the previous conclusion that when both players play randomly Player
-1 enjosy a ~30% advantage over Player 2.
+to confound the previous conclusion that when both players are playing randomly
+Player 1 enjoys an ~30% advantage over Player 2.
